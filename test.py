@@ -1,30 +1,26 @@
-import numpy as np
-import sdeint
-import matplotlib.pyplot as plt
+import sys, pygame
+pygame.init()
 
-A = np.eye(4, k =2)
-print(A)
+size = width, height = 1000, 1000
+speed = [2, 2]
+black = 0, 0, 0
 
-B = np.diag([1, 1, 1, 1]) # diagonal, so independent driving Wiener processes
+screen = pygame.display.set_mode(size)
 
-tspan = np.linspace(0.0, 10.0, 10001)
-x0 = np.array([0, 0, 1, 1])
+ball = pygame.image.load("Intro_ball.gif")
+ballrect = ball.get_rect()
 
+while 1:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT: sys.exit()
 
-def f(x, t):
-    print(A.dot(x))
-    return A.dot(x)
+    ballrect = ballrect.move(speed)
+    if ballrect.left < 0 or ballrect.right > width:
+        speed[0] = -speed[0]
+    if ballrect.top < 0 or ballrect.bottom > height:
+        speed[1] = -speed[1]
 
-
-def G(x, t):
-    return B
-
-
-result = sdeint.itoint(f, G, x0, tspan)
-
-plt.plot(tspan, result[:, 0], 'b', label='x(t)')
-plt.plot(tspan, result[:, 1], 'g', label='y(t)')
-plt.legend(loc='best')
-plt.xlabel('t')
-plt.grid()
-plt.show()
+    screen.fill(black)
+    screen.blit(ball, ballrect)
+    pygame.display.flip()
+    pygame.time.delay(10)

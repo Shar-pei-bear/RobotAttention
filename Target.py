@@ -80,6 +80,10 @@ class Cat:
         self.t = self.t0
         self.x = self.x0
 
+    def discrete_state(self):
+        return int(self.x[0]), int(self.x[1])
+
+    
 def main():
 
     cat1 = Cat(x0=[0, 0, 0, 0])

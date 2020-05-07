@@ -7,8 +7,10 @@ from Target import *
 from Robot import *
 
 
+
+
 class GridWorldGui:
-    def __init__(self, x0=None, t0=0, step=0.01, num_rows=8, num_cols=8, size=80):
+    def __init__(self, x0=None, t0=0, step=0.01, num_rows=6, num_cols=6, size=80):
 
         # compute the appropriate height and width (with room for cell borders)
         self.height = num_rows * size + num_rows + 1
@@ -102,8 +104,8 @@ class GridWorldGui:
                 if event.type in (pygame.QUIT, pygame.KEYDOWN):
                     sys.exit()
 
-            self.cat1.run(0.1)
-            self.cat2.run(0.1)
+            self.cat1.run(0.01)
+            self.cat2.run(0.01)
 
             if loop_index % 10 == 0:
                 loop_index = 0
@@ -112,7 +114,7 @@ class GridWorldGui:
                 goal = [np.random.random_integers(low=0, high=7), np.random.random_integers(low=0, high=7)]
 
             loop_index = loop_index + 1
-            self.robot.run(0.1, goal)
+            self.robot.run(0.01, goal)
 
             self.background()
             self.surface.blit(self.cat1.image, self.cat1.rect)
@@ -124,6 +126,7 @@ class GridWorldGui:
 
 def main():
     sim = GridWorldGui(x0=[1, 0.5, 2, 2, 3, 3])
+    # sim = GridWorldGui()
     sim.run()
 
 if __name__ == "__main__":

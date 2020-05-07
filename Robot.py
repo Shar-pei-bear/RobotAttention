@@ -6,7 +6,7 @@ import pygame
 
 
 class PointRobot:
-    def __init__(self, x0=None, t0=0, step=0.01, size=80, num_rows=8, num_cols=8, height=0, width=0, filename='robot.jpg'):
+    def __init__(self, x0=None, t0=0, step=0.01, size=80, num_rows=8, num_cols=8, height=0, width=0, filename='robot.jpeg'):
         # set initial time and state
 
         if x0 is None:

@@ -6,7 +6,7 @@ import pygame.locals as pgl
 from Target import *
 from Robot import *
 
-
+import pickle
 
 
 class GridWorldGui:
@@ -24,6 +24,14 @@ class GridWorldGui:
         self.top_edge = []
         self.right_edge = []
         self.bottom_edge = []
+
+        policy_name = "policy_semi_1.pkl"
+        policyact_name = "policy_sto.pkl"
+        with open(policy_name, "rb") as f1:
+            self.policy = pickle.load(f1)
+
+        with open(policyact_name, "rb") as f2:
+            self.policy_act = pickle.load(f2)
 
         for x in range(self.num_states):
             # note that edges are not disjoint, so we cannot use elif
@@ -111,6 +119,19 @@ class GridWorldGui:
                 loop_index = 0
                 # The goal for the robot is updated every 10 iteration of simulation. The current goal is generated
                 # is generated randomly, Haoxiang you can insert your algorithm here.
+                robot_st = self.robot.discrete_state()
+                cat1_st = self.cat1.discrete_state()
+                cat2_st = self.cat2.discrete_state()
+
+                joint_st = (robot_st, cat1_st, cat2_st)
+                target = self.policy[joint_st][0]
+
+                if target == 1:
+                    f_state = (robot_st, cat1_st)
+                elif target == 2:
+                    f_state = (robot_st, cat2_st)
+                action = self.policy_act[f_state]
+
                 goal = [np.random.random_integers(low=0, high=7), np.random.random_integers(low=0, high=7)]
 
             loop_index = loop_index + 1

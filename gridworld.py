@@ -130,9 +130,19 @@ class GridWorldGui:
                     f_state = (robot_st, cat1_st)
                 elif target == 2:
                     f_state = (robot_st, cat2_st)
-                action = self.policy_act[f_state]
+                action_dict = self.policy_act[f_state]
+                exact_action = randomchoose(action_dict)
+                if exact_action == "N":
+                    goal = np.array(robot_st) + [-1, 0]
+                elif exact_action == "S":
+                    goal = np.array(robot_st) + [1, 0]
+                elif exact_action == "W":
+                    goal = np.array(robot_st) + [0, -1]
+                elif exact_action == "E":
+                    goal = np.array(robot_st) + [0, 1]
 
-                goal = [np.random.random_integers(low=0, high=7), np.random.random_integers(low=0, high=7)]
+
+                # goal = [np.random.random_integers(low=0, high=7), np.random.random_integers(low=0, high=7)]
 
             loop_index = loop_index + 1
             self.robot.run(0.01, goal)
@@ -144,6 +154,16 @@ class GridWorldGui:
             self.screen.blit(self.surface, (0, 0))
             pygame.display.update()
             pygame.time.delay(100)
+
+def randomchoose(dic):
+    keylist = []
+    valuelist = []
+    for key in dic.keys():
+        keylist.append(key)
+        valuelist.append(dic[key])
+    choice_index = np.random.choice(len(keylist), 1, p = valuelist)[0]
+    choice = keylist[choice_index]
+    return choice
 
 def main():
     sim = GridWorldGui(x0=[1, 0.5, 2, 2, 3, 3])

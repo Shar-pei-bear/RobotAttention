@@ -47,15 +47,15 @@ class GridWorldGui:
                             filename='cat1.jpeg')
             self.cat2 = Cat(x0, t0, step, size, image_size, num_rows, num_cols, self.height, self.width, self.obstacles,
                             filename='cat2.jpeg')
-            self.robot = PointRobot(x0, t0, step, size, image_size, num_rows, num_cols, self.height, self.width, self.obstacles,
-                                    filename='robot.jpeg')
+            self.robot = PointRobot(x0, t0, step, size, image_size, num_rows, num_cols, self.height, self.width,
+                                    self.obstacles, filename='robot.jpeg')
         else:
             self.cat1 = Cat(x0[0:2] + [0, 0], t0, step, size, image_size, num_rows, num_cols, self.height, self.width,
                             self.obstacles, filename='cat1.jpeg')
             self.cat2 = Cat(x0[2:4] + [0, 0], t0, step, size, image_size, num_rows, num_cols, self.height, self.width,
                             self.obstacles, filename='cat2.jpeg')
-            self.robot = PointRobot(x0[4:6] + [0, 0], t0, step, size, image_size, num_rows, num_cols, self.height, self.width,
-                                    self.obstacles, filename='robot.jpeg')
+            self.robot = PointRobot(x0[4:6] + [0, 0], t0, step, size, image_size, num_rows, num_cols, self.height,
+                                    self.width, self.obstacles, filename='robot.jpeg')
 
         self.screen = pygame.display.get_surface()
         self.surface = pygame.Surface(self.screen.get_size())

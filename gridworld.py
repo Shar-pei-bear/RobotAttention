@@ -10,7 +10,8 @@ import pickle
 
 
 class GridWorldGui:
-    def __init__(self, x0=None, t0=0, step=0.01, num_rows=5, num_cols=5, size=80, obstacles=None, forbidden_zone=None):
+    def __init__(self, x0=None, t0=0, step=0.01, num_rows=5, num_cols=5, size=80, image_size=40,
+                 obstacles=None, forbidden_zone=None):
 
         # compute the appropriate height and width (with room for cell borders)
         self.height = num_rows * size + num_rows + 1
@@ -42,18 +43,18 @@ class GridWorldGui:
 
         # initialize robot and target
         if x0 is None:
-            self.cat1 = Cat(x0, t0, step, size, num_rows, num_cols, self.height, self.width, self.obstacles,
+            self.cat1 = Cat(x0, t0, step, size, image_size, num_rows, num_cols, self.height, self.width, self.obstacles,
                             filename='cat1.jpeg')
-            self.cat2 = Cat(x0, t0, step, size, num_rows, num_cols, self.height, self.width, self.obstacles,
+            self.cat2 = Cat(x0, t0, step, size, image_size, num_rows, num_cols, self.height, self.width, self.obstacles,
                             filename='cat2.jpeg')
-            self.robot = PointRobot(x0, t0, step, size, num_rows, num_cols, self.height, self.width, self.obstacles,
+            self.robot = PointRobot(x0, t0, step, size, image_size, num_rows, num_cols, self.height, self.width, self.obstacles,
                                     filename='robot.jpeg')
         else:
-            self.cat1 = Cat(x0[0:2] + [0, 0], t0, step, size, num_rows, num_cols, self.height, self.width,
+            self.cat1 = Cat(x0[0:2] + [0, 0], t0, step, size, image_size, num_rows, num_cols, self.height, self.width,
                             self.obstacles, filename='cat1.jpeg')
-            self.cat2 = Cat(x0[2:4] + [0, 0], t0, step, size, num_rows, num_cols, self.height, self.width,
+            self.cat2 = Cat(x0[2:4] + [0, 0], t0, step, size, image_size, num_rows, num_cols, self.height, self.width,
                             self.obstacles, filename='cat2.jpeg')
-            self.robot = PointRobot(x0[4:6] + [0, 0], t0, step, size, num_rows, num_cols, self.height, self.width,
+            self.robot = PointRobot(x0[4:6] + [0, 0], t0, step, size, image_size, num_rows, num_cols, self.height, self.width,
                                     self.obstacles, filename='robot.jpeg')
 
         self.screen = pygame.display.get_surface()
@@ -62,8 +63,13 @@ class GridWorldGui:
         self.bg_rendered = False  # optimize background render
 
         self.background()
+        # self.surface.blit(self.cat1.image, self.cat1.rect)
+        # self.surface.blit(self.cat2.image, self.cat2.rect)
+        # self.surface.blit(self.robot.image, self.robot.rect)
         self.screen.blit(self.surface, (0, 0))
+
         pygame.display.update()
+        # pygame.time.delay(5000)
 
     def indx2coord(self, i, j, center=False):
         # the +1 indexing business is to ensure that the grid cells
@@ -141,12 +147,25 @@ class GridWorldGui:
                     else:
                         exact_action = 'E'
                 else:
+                    # choose specific policy based the current progress here
+                    if self.cat1.caught and self.cat2.caught:
+                        print ("Successfully catch both cats")
+                        sys.exit()
+                    elif self.cat1.caught and not self.cat2.caught:
+                        pass
+                    elif self.cat2.caught and not self.cat1.caught:
+                        pass
+                    else:
+                        pass
+
                     target = self.policy[joint_st][0]
 
                     if target == 1:
                         f_state = (robot_st, cat1_st)
+
                     elif target == 2:
                         f_state = (robot_st, cat2_st)
+
                     action_dict = self.policy_act[f_state]
                     exact_action = randomchoose(action_dict)
 
@@ -165,9 +184,18 @@ class GridWorldGui:
             loop_index = loop_index + 1
             self.robot.run(0.01, goal)
 
+            if self.cat1.discrete_state() == self.robot.discrete_state():
+                self.cat1.caught = True
+
+            if self.cat2.discrete_state() == self.robot.discrete_state():
+                self.cat2.caught = True
+
             self.background()
-            self.surface.blit(self.cat1.image, self.cat1.rect)
-            self.surface.blit(self.cat2.image, self.cat2.rect)
+            if not self.cat1.caught:
+                self.surface.blit(self.cat1.image, self.cat1.rect)
+
+            if not self.cat2.caught:
+                self.surface.blit(self.cat2.image, self.cat2.rect)
             self.surface.blit(self.robot.image, self.robot.rect)
             self.screen.blit(self.surface, (0, 0))
             pygame.display.update()
@@ -187,6 +215,7 @@ def main():
     obstacles = [(1, 1), (1, 3), (3, 1), (3, 3)]
     forbidden_zone = [(2, 2)]
     sim = GridWorldGui(x0=[4, 2, 4, 3, 0, 0], obstacles=obstacles, forbidden_zone=forbidden_zone)
+    # sim = GridWorldGui(x0=[0, 0.5, 0.5, 4, 4, 4], obstacles=obstacles, forbidden_zone=forbidden_zone)
     # sim = GridWorldGui()
     sim.run()
 

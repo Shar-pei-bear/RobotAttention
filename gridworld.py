@@ -152,22 +152,27 @@ class GridWorldGui:
                         print ("Successfully catch both cats")
                         sys.exit()
                     elif self.cat1.caught and not self.cat2.caught:
-                        pass
-                    elif self.cat2.caught and not self.cat1.caught:
-                        pass
-                    else:
-                        pass
-
-                    target = self.policy[joint_st][0]
-
-                    if target == 1:
-                        f_state = (robot_st, cat1_st)
-
-                    elif target == 2:
                         f_state = (robot_st, cat2_st)
+                        action_dict = self.policy_act[f_state]
+                        exact_action = randomchoose(action_dict)
+                        # pass
+                    elif self.cat2.caught and not self.cat1.caught:
+                        f_state = (robot_st, cat1_st)
+                        action_dict = self.policy_act[f_state]
+                        exact_action = randomchoose(action_dict)
+                        # pass
+                    else:
+                        # pass
+                        target = self.policy[joint_st][0]
 
-                    action_dict = self.policy_act[f_state]
-                    exact_action = randomchoose(action_dict)
+                        if target == 1:
+                            f_state = (robot_st, cat1_st)
+
+                        elif target == 2:
+                            f_state = (robot_st, cat2_st)
+
+                        action_dict = self.policy_act[f_state]
+                        exact_action = randomchoose(action_dict)
 
                 if exact_action == "N":
                     goal = np.array(robot_st) + [-1, 0]

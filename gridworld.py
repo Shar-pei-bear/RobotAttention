@@ -127,14 +127,29 @@ class GridWorldGui:
                 cat2_st = self.cat2.discrete_state()
 
                 joint_st = (robot_st, cat1_st, cat2_st)
-                target = self.policy[joint_st][0]
+                if robot_st in self.obstacles:
+                    x, y = robot_st
+                    temp = np.abs([self.robot.x[0] + 0.5 - x, self.robot.x[0] - 0.5 - x,
+                                   self.robot.x[1] + 0.5 - y, self.robot.x[1] - 0.5 - y])
+                    side_index = np.argmin(temp)
+                    if side_index == 0:
+                        exact_action = 'N'
+                    elif side_index == 1:
+                        exact_action = 'S'
+                    elif side_index == 2:
+                        exact_action = 'W'
+                    else:
+                        exact_action = 'E'
+                else:
+                    target = self.policy[joint_st][0]
 
-                if target == 1:
-                    f_state = (robot_st, cat1_st)
-                elif target == 2:
-                    f_state = (robot_st, cat2_st)
-                action_dict = self.policy_act[f_state]
-                exact_action = randomchoose(action_dict)
+                    if target == 1:
+                        f_state = (robot_st, cat1_st)
+                    elif target == 2:
+                        f_state = (robot_st, cat2_st)
+                    action_dict = self.policy_act[f_state]
+                    exact_action = randomchoose(action_dict)
+
                 if exact_action == "N":
                     goal = np.array(robot_st) + [-1, 0]
                 elif exact_action == "S":

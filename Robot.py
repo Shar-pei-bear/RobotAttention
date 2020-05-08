@@ -6,8 +6,8 @@ import pygame
 
 
 class PointRobot:
-    def __init__(self, x0=None, t0=0, step=0.01, size=80, num_rows=8, num_cols=8, height=0, width=0, obstacles=None,
-                 filename='robot.jpeg'):
+    def __init__(self, x0=None, t0=0, step=0.01, size=80, image_size=40, num_rows=8, num_cols=8, height=0, width=0,
+                 obstacles=None, filename='robot.jpeg'):
         # set initial time and state
 
         if x0 is None:
@@ -26,6 +26,7 @@ class PointRobot:
         self.num_rows = num_rows
         self.num_cols = num_cols
         self.size = size
+        self.image_size = image_size
 
         self.trajectory = []
         self.step = step
@@ -38,7 +39,7 @@ class PointRobot:
         self.B = np.array([[0.009056, 0], [0, 0.009056], [1.722, 0], [0, 1.722]])
 
         self.image = pygame.image.load(filename).convert()
-        self.image = pygame.transform.scale(self.image, (size, size))
+        self.image = pygame.transform.scale(self.image, (image_size, image_size))
         self.rect = self.image.get_rect()
 
         self.state2pixel()
@@ -92,8 +93,8 @@ class PointRobot:
 
     def state2pixel(self):
 
-        pixel_x = 1 + self.x[0]*(self.width - 2 - self.size) / (self.num_cols - 1)
-        pixel_y = 1 + self.x[1] * (self.height - 2 - self.size) / (self.num_rows - 1)
+        pixel_x = 1 + self.size/2 - self.image_size/2 + self.x[0]*(self.width - 2 - self.size) / (self.num_cols - 1)
+        pixel_y = 1 + self.size/2 - self.image_size/2 + self.x[1]*(self.height - 2 - self.size) / (self.num_rows - 1)
 
         delta_x = pixel_x - self.rect.left
         delta_y = pixel_y - self.rect.top

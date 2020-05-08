@@ -43,6 +43,7 @@ class PointRobot:
 
         self.state2pixel()
         self.obstacles = obstacles
+        self.caught = False
 
     def update(self, goal):
 

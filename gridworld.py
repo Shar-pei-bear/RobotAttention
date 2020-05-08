@@ -141,6 +141,16 @@ class GridWorldGui:
                     else:
                         exact_action = 'E'
                 else:
+                    # choose specific policy based the current progress here
+                    if self.cat1.caught and self.cat2.caught:
+                        pass
+                    elif self.cat1.caught and not self.cat2.caught:
+                        pass
+                    elif self.cat2.caught and not self.cat1.caught:
+                        pass
+                    else:
+                        pass
+
                     target = self.policy[joint_st][0]
 
                     if target == 1:
@@ -165,9 +175,18 @@ class GridWorldGui:
             loop_index = loop_index + 1
             self.robot.run(0.01, goal)
 
+            if self.cat1.discrete_state() == self.robot.discrete_state():
+                self.cat1.caught = True
+
+            if self.cat2.discrete_state() == self.robot.discrete_state():
+                self.cat2.caught = True
+
             self.background()
-            self.surface.blit(self.cat1.image, self.cat1.rect)
-            self.surface.blit(self.cat2.image, self.cat2.rect)
+            if not self.cat1.caught:
+                self.surface.blit(self.cat1.image, self.cat1.rect)
+
+            if not self.cat2.caught:
+                self.surface.blit(self.cat2.image, self.cat2.rect)
             self.surface.blit(self.robot.image, self.robot.rect)
             self.screen.blit(self.surface, (0, 0))
             pygame.display.update()

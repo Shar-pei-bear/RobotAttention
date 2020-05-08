@@ -36,6 +36,7 @@ class Cat:
 
         self.state2pixel()
         self.obstacles = obstacles
+        self.caught = False
 
     def update(self):
         self.x = self.x + np.array([self.x[2], self.x[3], 10*np.random.randn(), 10*np.random.randn()])*self.step

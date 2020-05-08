@@ -1,4 +1,5 @@
 import sys, pygame
+import numpy as np
 pygame.init()
 
 size = width, height = 1000, 1000
@@ -9,6 +10,7 @@ screen = pygame.display.set_mode(size)
 
 ball = pygame.image.load("Intro_ball.gif")
 ballrect = ball.get_rect()
+print(np.rint(0.1))
 
 while 1:
     for event in pygame.event.get():

@@ -10,7 +10,7 @@ import pickle
 
 
 class GridWorldGui:
-    def __init__(self, x0=None, t0=0, step=0.01, num_rows=6, num_cols=6, size=80):
+    def __init__(self, x0=None, t0=0, step=0.01, num_rows=5, num_cols=5, size=80, obstacles=None, forbidden_zone=None):
 
         # compute the appropriate height and width (with room for cell borders)
         self.height = num_rows * size + num_rows + 1
@@ -33,18 +33,8 @@ class GridWorldGui:
         with open(policyact_name, "rb") as f2:
             self.policy_act = pickle.load(f2)
 
-        for x in range(self.num_states):
-            # note that edges are not disjoint, so we cannot use elif
-            if x % self.num_cols == 0:
-                self.left_edge.append(x)
-            if 0 <= x < self.num_cols:
-                self.top_edge.append(x)
-            if x % self.num_cols == self.num_cols - 1:
-                self.right_edge.append(x)
-            if (self.num_rows - 1) * self.num_cols <= x <= self.num_states:
-                self.bottom_edge.append(x)
-        self.edges = self.left_edge + self.top_edge + self.right_edge + self.bottom_edge
-
+        self.obstacles = obstacles
+        self.forbidden_zone = forbidden_zone
         # initialize pygame ( SDL extensions )
         pygame.init()
         pygame.display.set_mode((self.width, self.height))
@@ -52,13 +42,19 @@ class GridWorldGui:
 
         # initialize robot and target
         if x0 is None:
-            self.cat1 = Cat(x0, t0, step, size, num_rows, num_cols, self.height, self.width, filename='cat1.jpeg')
-            self.cat2 = Cat(x0, t0, step, size, num_rows, num_cols, self.height, self.width, filename='cat2.jpeg')
-            self.robot = PointRobot(x0, t0, step, size, num_rows, num_cols, self.height, self.width, filename='robot.jpeg')
+            self.cat1 = Cat(x0, t0, step, size, num_rows, num_cols, self.height, self.width, self.obstacles,
+                            filename='cat1.jpeg')
+            self.cat2 = Cat(x0, t0, step, size, num_rows, num_cols, self.height, self.width, self.obstacles,
+                            filename='cat2.jpeg')
+            self.robot = PointRobot(x0, t0, step, size, num_rows, num_cols, self.height, self.width, self.obstacles,
+                                    filename='robot.jpeg')
         else:
-            self.cat1 = Cat(x0[0:2] + [0, 0], t0, step, size, num_rows, num_cols, self.height, self.width, filename='cat1.jpeg')
-            self.cat2 = Cat(x0[2:4] + [0, 0], t0, step, size, num_rows, num_cols, self.height, self.width, filename='cat2.jpeg')
-            self.robot = PointRobot(x0[4:6] + [0, 0], t0, step, size, num_rows, num_cols, self.height, self.width, filename='robot.jpeg')
+            self.cat1 = Cat(x0[0:2] + [0, 0], t0, step, size, num_rows, num_cols, self.height, self.width,
+                            self.obstacles, filename='cat1.jpeg')
+            self.cat2 = Cat(x0[2:4] + [0, 0], t0, step, size, num_rows, num_cols, self.height, self.width,
+                            self.obstacles, filename='cat2.jpeg')
+            self.robot = PointRobot(x0[4:6] + [0, 0], t0, step, size, num_rows, num_cols, self.height, self.width,
+                                    self.obstacles, filename='robot.jpeg')
 
         self.screen = pygame.display.get_surface()
         self.surface = pygame.Surface(self.screen.get_size())
@@ -69,10 +65,10 @@ class GridWorldGui:
         self.screen.blit(self.surface, (0, 0))
         pygame.display.update()
 
-    def indx2coord(self, s, center=False):
+    def indx2coord(self, i, j, center=False):
         # the +1 indexing business is to ensure that the grid cells
         # have borders of width 1px
-        i, j = self.coords(s)
+
         if center:
             return i * (self.size + 1) + 1 + self.size / 2, \
                    j * (self.size + 1) + 1 + self.size / 2
@@ -89,16 +85,23 @@ class GridWorldGui:
         else:
             self.bg.fill((0, 0, 0))
             for s in range(self.num_states):
-                x, y = self.indx2coord(s, False)
-                coords = pygame.Rect(y, x, self.size, self.size)
+                i, j = self.coords(s)
+                x, y = self.indx2coord(i, j, False)
+                coords = pygame.Rect(x, y, self.size, self.size)
                 pygame.draw.rect(self.bg, (255, 255, 255), coords)
 
                 # Draw Wall in black color.
-            for s in self.edges:
-                (x, y) = self.indx2coord(s)
+            for (i, j) in self.obstacles:
+                x, y = self.indx2coord(i, j, False)
                 # coords = pygame.Rect(y-self.size/2, x - self.size/2, self.size, self.size)
-                coords = pygame.Rect(y, x, self.size, self.size)
-                pygame.draw.rect(self.bg, (192, 192, 192), coords)  # the obstacles are in color grey
+                coords = pygame.Rect(x, y, self.size, self.size)
+                pygame.draw.rect(self.bg, (255, 0, 0), coords)  # the obstacles are in color red
+
+            for (i, j) in self.forbidden_zone:
+                x, y = self.indx2coord(i, j, False)
+                # coords = pygame.Rect(y-self.size/2, x - self.size/2, self.size, self.size)
+                coords = pygame.Rect(x, y, self.size, self.size)
+                pygame.draw.rect(self.bg, (0, 0, 0), coords)  # the forbidden zoom are in color black
 
         self.bg_rendered = True  # don't render again unless flag is set
 
@@ -166,7 +169,9 @@ def randomchoose(dic):
     return choice
 
 def main():
-    sim = GridWorldGui(x0=[1, 0.5, 2, 2, 3, 3])
+    obstacles = [(1, 1), (1, 3), (3, 1), (3, 3)]
+    forbidden_zone = [(2, 2)]
+    sim = GridWorldGui(x0=[0, 0, 0, 1, 0, 2], obstacles=obstacles, forbidden_zone=forbidden_zone)
     # sim = GridWorldGui()
     sim.run()
 

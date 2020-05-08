@@ -6,7 +6,8 @@ import pygame
 
 
 class PointRobot:
-    def __init__(self, x0=None, t0=0, step=0.01, size=80, num_rows=8, num_cols=8, height=0, width=0, filename='robot.jpeg'):
+    def __init__(self, x0=None, t0=0, step=0.01, size=80, num_rows=8, num_cols=8, height=0, width=0, obstacles=None,
+                 filename='robot.jpeg'):
         # set initial time and state
 
         if x0 is None:
@@ -41,15 +42,19 @@ class PointRobot:
         self.rect = self.image.get_rect()
 
         self.state2pixel()
+        self.obstacles = obstacles
 
     def update(self, goal):
 
         u = np.array(goal) + np.random.randn(2)*self.step*100
         self.x = self.A.dot(self.x) + self.B.dot(u)
         self.t = self.t + self.step
+        self.check_wall()
+        self.check_obstacles()
+        self.state2pixel()
 
         # if the robot reaches the boundaries, it will bounce back with reverse velocity
-
+    def check_wall(self):
         if self.x[0] < 0:
             self.x[0] = 0
             self.x[2] = -self.x[2]
@@ -64,7 +69,21 @@ class PointRobot:
             self.x[1] = self.num_rows - 1
             self.x[3] = -self.x[3]
 
-        self.state2pixel()
+        # if the robot hits obstacles, it will come to a halt
+    def check_obstacles(self):
+        x, y = self.discrete_state()
+        if (x, y) in self.obstacles:
+            # determine which side of the grid the object hit
+            temp = np.abs([self.x[0] + 0.5 - x, self.x[0] - 0.5 - x, self.x[1] + 0.5 - y, self.x[1] - 0.5 - y])
+            side_index = np.argmin(temp)
+            if side_index == 0 and self.x[2] > 0:
+                self.x[2] = 0
+            elif side_index == 1 and self.x[2] < 0:
+                self.x[2] = 0
+            elif side_index == 2 and self.x[3] > 0:
+                self.x[3] = 0
+            elif side_index == 3 and self.x[3] < 0:
+                self.x[3] = 0
 
     def state2pixel(self):
 
@@ -92,9 +111,14 @@ class PointRobot:
         self.x = self.x0
 
     def discrete_state(self):
-        return int(self.x[0]), int(self.x[1])
+        return np.rint(self.x[0]).astype(int), np.rint(self.x[1]).astype(int)
+
+    def discrete_state_policy(self):
+        return np.rint(self.x[1]).astype(int), np.rint(self.x[0]).astype(int)
 
 def main():
+    pygame.init()
+    pygame.display.set_mode()
 
     robot1 = PointRobot(x0=[0, 0, 0, 0])
     robot1.run(1, [1, 1])

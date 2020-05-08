@@ -186,7 +186,7 @@ def randomchoose(dic):
 def main():
     obstacles = [(1, 1), (1, 3), (3, 1), (3, 3)]
     forbidden_zone = [(2, 2)]
-    sim = GridWorldGui(x0=[0, 0, 0, 1, 0, 2], obstacles=obstacles, forbidden_zone=forbidden_zone)
+    sim = GridWorldGui(x0=[4, 2, 4, 3, 0, 0], obstacles=obstacles, forbidden_zone=forbidden_zone)
     # sim = GridWorldGui()
     sim.run()
 

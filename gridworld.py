@@ -10,7 +10,7 @@ import pickle
 
 
 class GridWorldGui:
-    def __init__(self, x0=None, t0=0, step=0.01, num_rows=5, num_cols=5, size=80, image_size=40,
+    def __init__(self, x0=None, t0=0, step=0.01, num_rows=5, num_cols=5, size=200, image_size=100,
                  obstacles=None, forbidden_zone=None):
 
         # compute the appropriate height and width (with room for cell borders)
@@ -38,6 +38,9 @@ class GridWorldGui:
         self.forbidden_zone = forbidden_zone
         # initialize pygame ( SDL extensions )
         pygame.init()
+        pygame.font.init()
+        my_font = pygame.font.SysFont('Comic Sans MS', 20)
+        self.text_surface = my_font.render('Spotlight', False, (0, 0, 0))
         pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption('GridWorld')
 
@@ -47,15 +50,15 @@ class GridWorldGui:
                             filename='cat1.jpeg')
             self.cat2 = Cat(x0, t0, step, size, image_size, num_rows, num_cols, self.height, self.width, self.obstacles,
                             filename='cat2.jpeg')
-            self.robot = PointRobot(x0, t0, step, size, image_size, num_rows, num_cols, self.height, self.width, self.obstacles,
-                                    filename='robot.jpeg')
+            self.robot = PointRobot(x0, t0, step, size, image_size, num_rows, num_cols, self.height, self.width,
+                                    self.obstacles, filename='robot.jpeg')
         else:
             self.cat1 = Cat(x0[0:2] + [0, 0], t0, step, size, image_size, num_rows, num_cols, self.height, self.width,
                             self.obstacles, filename='cat1.jpeg')
             self.cat2 = Cat(x0[2:4] + [0, 0], t0, step, size, image_size, num_rows, num_cols, self.height, self.width,
                             self.obstacles, filename='cat2.jpeg')
-            self.robot = PointRobot(x0[4:6] + [0, 0], t0, step, size, image_size, num_rows, num_cols, self.height, self.width,
-                                    self.obstacles, filename='robot.jpeg')
+            self.robot = PointRobot(x0[4:6] + [0, 0], t0, step, size, image_size, num_rows, num_cols, self.height,
+                                    self.width, self.obstacles, filename='robot.jpeg')
 
         self.screen = pygame.display.get_surface()
         self.surface = pygame.Surface(self.screen.get_size())
@@ -198,9 +201,14 @@ class GridWorldGui:
             self.background()
             if not self.cat1.caught:
                 self.surface.blit(self.cat1.image, self.cat1.rect)
+                if target == 1:
+                    self.surface.blit(self.text_surface, (self.cat1.rect.left + 5, self.cat1.rect.top - 30))
+
 
             if not self.cat2.caught:
                 self.surface.blit(self.cat2.image, self.cat2.rect)
+                if target == 2:
+                    self.surface.blit(self.text_surface, (self.cat2.rect.left + 5, self.cat2.rect.top - 30))
             self.surface.blit(self.robot.image, self.robot.rect)
             self.screen.blit(self.surface, (0, 0))
             pygame.display.update()

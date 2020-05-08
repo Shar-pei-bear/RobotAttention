@@ -30,6 +30,7 @@ class Object:
 
         self.image = pygame.image.load(filename).convert()
         self.image = pygame.transform.scale(self.image, (image_size, image_size))
+
         self.rect = self.image.get_rect()
 
         self.state2pixel()

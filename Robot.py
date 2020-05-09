@@ -17,7 +17,7 @@ class PointRobot(Object):
 
     def update(self, goal):
 
-        u = np.array(goal) + np.random.randn(2)*self.step*100
+        u = np.array(goal) + np.random.randn(2)*self.step*0
         self.x = self.A.dot(self.x) + self.B.dot(u)
         self.t = self.t + self.step
         self.check_wall()

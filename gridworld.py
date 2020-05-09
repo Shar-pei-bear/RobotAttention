@@ -155,11 +155,13 @@ class GridWorldGui:
                         print ("Successfully catch both cats")
                         sys.exit()
                     elif self.cat1.caught and not self.cat2.caught:
+                        target = 2
                         f_state = (robot_st, cat2_st)
                         action_dict = self.policy_act[f_state]
                         exact_action = randomchoose(action_dict)
                         # pass
                     elif self.cat2.caught and not self.cat1.caught:
+                        target = 1
                         f_state = (robot_st, cat1_st)
                         action_dict = self.policy_act[f_state]
                         exact_action = randomchoose(action_dict)

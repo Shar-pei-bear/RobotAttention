@@ -62,18 +62,23 @@ class Object:
             # determine which side of the grid the object hit
             temp = np.abs([self.x[0] + 0.5 - x, self.x[0] - 0.5 - x, self.x[1] + 0.5 - y, self.x[1] - 0.5 - y])
             side_index = np.argmin(temp)
-            if side_index == 0 and self.x[2] > 0:
-                self.x[0] = self.x[0] - self.x[2]*self.step
-                self.x[2] = 0
-            elif side_index == 1 and self.x[2] < 0:
-                self.x[0] = self.x[0] - self.x[2]*self.step
-                self.x[2] = 0
-            elif side_index == 2 and self.x[3] > 0:
-                self.x[1] = self.x[1] - self.x[3]*self.step
-                self.x[3] = 0
-            elif side_index == 3 and self.x[3] < 0:
-                self.x[1] = self.x[1] - self.x[3]*self.step
-                self.x[3] = 0
+            px = self.x.copy()
+            if side_index == 0:
+                self.x[0] = x - 0.5000001
+                if self.x[2] > 0:
+                    self.x[2] = 0
+            elif side_index == 1:
+                self.x[0] = x + 0.5000001
+                if self.x[2] < 0:
+                    self.x[2] = 0
+            elif side_index == 2:
+                self.x[1] = y - 0.5000001
+                if self.x[3] > 0:
+                    self.x[3] = 0
+            elif side_index == 3:
+                self.x[1] = y + 0.5000001
+                if self.x[3] < 0:
+                    self.x[3] = 0
 
     def state2pixel(self):
 

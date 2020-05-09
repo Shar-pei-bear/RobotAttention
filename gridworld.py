@@ -1,4 +1,4 @@
-import  sys
+import sys
 
 import pygame
 import pygame.locals as pgl

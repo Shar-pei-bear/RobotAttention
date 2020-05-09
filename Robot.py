@@ -1,5 +1,6 @@
 from object import *
-
+import matplotlib
+import matplotlib.pyplot as plt
 
 class PointRobot(Object):
     def __init__(self, x0=None, t0=0, step=0.01, size=80, image_size=40, num_rows=8, num_cols=8, height=0, width=0,

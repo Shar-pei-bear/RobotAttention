@@ -1,4 +1,6 @@
 from object import *
+import matplotlib
+import matplotlib.pyplot as plt
 
 
 class Cat(Object):
@@ -23,9 +25,9 @@ def main():
     pygame.init()
     pygame.display.set_mode()
 
-    cat1 = Cat(x0=[0, 0, 0, 0])
-    cat1.run(1)
-    cat1.run(1)
+    cat1 = Cat(x0=[0, 0, 0, 0], obstacles=[(1, 1), (1, 3), (3, 1), (3, 3)])
+    cat1.run(100)
+    # cat1.run(1)
 
     plt.plot(cat1.trajectory[:, 2], cat1.trajectory[:, 0], 'b', label='x(t)')
     plt.plot(cat1.trajectory[:, 2], cat1.trajectory[:, 1], 'b', label='x(t)')

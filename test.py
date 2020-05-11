@@ -11,7 +11,7 @@ screen = pygame.display.set_mode(size)
 ball = pygame.image.load("Intro_ball.gif")
 ballrect = ball.get_rect()
 print(np.rint(0.1))
-
+print(1 % 4.0)
 while 1:
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()

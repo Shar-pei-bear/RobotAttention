@@ -11,7 +11,7 @@ import pickle
 
 class GridWorldGui:
     def __init__(self, x0=None, t0=0, step=0.01, num_rows=5, num_cols=5, size=200, image_size=100,
-                 obstacles=None, forbidden_zone=None):
+                 obstacles=None, forbidden_zone=None, T=1):
 
         # compute the appropriate height and width (with room for cell borders)
         self.height = num_rows * size + num_rows + 1
@@ -20,14 +20,15 @@ class GridWorldGui:
         self.num_states = num_rows * num_cols
         self.num_rows = num_rows
         self.num_cols = num_cols
+        self.T = T
 
         self.left_edge = []
         self.top_edge = []
         self.right_edge = []
         self.bottom_edge = []
 
-        policy_name = "policy_semi_1.pkl"
-        policyact_name = "policy_sto.pkl"
+        policy_name = "policy/policy_semi_" + str(self.T) + ".pkl"
+        policyact_name = "policy/policy_sto.pkl"
         with open(policy_name, "rb") as f1:
             self.policy = pickle.load(f1)
 
@@ -119,6 +120,7 @@ class GridWorldGui:
     def run(self):
         loop_index = 0
         goal = []
+        counter = 0
         while 1:
             for event in pygame.event.get():
                 if event.type in (pygame.QUIT, pygame.KEYDOWN):
@@ -152,7 +154,7 @@ class GridWorldGui:
                 else:
                     # choose specific policy based the current progress here
                     if self.cat1.caught and self.cat2.caught:
-                        print ("Successfully catch both cats")
+                        print("Successfully catch both cats")
                         sys.exit()
                     elif self.cat1.caught and not self.cat2.caught:
                         target = 2
@@ -168,7 +170,11 @@ class GridWorldGui:
                         # pass
                     else:
                         # pass
-                        target = self.policy[joint_st][0]
+                        if np.isclose(counter, 0):
+                            counter = 0
+                            target = self.policy[joint_st][0]
+                            counter_max = self.policy[joint_st][1]
+                        counter = (counter + 1) % counter_max
 
                         if target == 1:
                             f_state = (robot_st, cat1_st)
@@ -229,7 +235,7 @@ def randomchoose(dic):
 def main():
     obstacles = [(1, 1), (1, 3), (3, 1), (3, 3)]
     forbidden_zone = [(2, 2)]
-    sim = GridWorldGui(x0=[4, 2, 4, 3, 0, 0], obstacles=obstacles, forbidden_zone=forbidden_zone)
+    sim = GridWorldGui(x0=[4, 2, 4, 3, 0, 0], obstacles=obstacles, forbidden_zone=forbidden_zone, T=4)
     # sim = GridWorldGui(x0=[0, 0.5, 0.5, 4, 4, 4], obstacles=obstacles, forbidden_zone=forbidden_zone)
     # sim = GridWorldGui()
     sim.run()

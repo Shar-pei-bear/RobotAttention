@@ -80,6 +80,16 @@ class Object:
                 if self.x[3] < 0:
                     self.x[3] = 0
 
+    def check_speed(self):
+        print(self.x[2])
+        print(np.ceil(self.x[0]) + 1 - self.x[0])
+        print(np.floor(self.x[0]) - 1 - self.x[0])
+        self.x[2] = np.minimum(self.x[2], np.ceil(self.x[0]) + 1 - self.x[0])
+
+        self.x[2] = np.maximum(self.x[2], np.floor(self.x[0]) - 1 - self.x[0])
+        self.x[3] = np.minimum(self.x[3], np.ceil(self.x[1]) + 1 - self.x[1])
+        self.x[3] = np.maximum(self.x[3], np.floor(self.x[1]) - 1 - self.x[1])
+
     def state2pixel(self):
 
         pixel_x = 1 + self.size/2 - self.image_size/2 + self.x[0]*(self.width - 2 - self.size) / (self.num_cols - 1)

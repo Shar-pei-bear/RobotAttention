@@ -9,6 +9,7 @@ class Cat(Object):
         self.t = self.t + self.step
         self.check_wall()
         self.check_obstacles()
+        #self.check_speed()
         self.state2pixel()
 
     def run(self, interval):
